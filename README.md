@@ -15,3 +15,8 @@ cd Ludo
 pip3 install pillow
 python3 main.py
 ```
+
+## Contributors
+
+- [Dhananjay Choudhary (@DjayChoudhary)](https://github.com/DjayChoudhary)
+- [Shivam Dhall (@shivam-dhall)](https://github.com/shivam-dhall)
