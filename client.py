@@ -1,16 +1,13 @@
-import pygame
-from network import Network
-
-from tkinter import Tk, Frame, Scrollbar, Label, END, Entry, Text, VERTICAL, Button, messagebox #Tkinter Python Module for GUI  
-import socket #Sockets for network connection
-import threading # for multiple proccess 
-
+# Tkinter Python Module for GUI
+from tkinter import Tk, Frame, Scrollbar, Label, END, Entry, Text, VERTICAL, Button, messagebox
+import socket  # Sockets for network connection
+import threading  # for multiple proccess
 
 
 class GUI:
     client_socket = None
     last_received_message = None
-    
+
     def __init__(self, master):
         self.root = master
         self.chat_transcript_area = None
@@ -22,29 +19,33 @@ class GUI:
         self.listen_for_incoming_messages_in_a_thread()
 
     def initialize_socket(self):
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # initialazing socket with TCP and IPv4
-        remote_ip = '127.0.0.1' # IP address 
-        remote_port = 10319 #TCP port
-        self.client_socket.connect((remote_ip, remote_port)) #connect to the remote server
+        # initialazing socket with TCP and IPv4
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        remote_ip = '127.0.0.1'  # IP address
+        remote_port = 10319  # TCP port
+        # connect to the remote server
+        self.client_socket.connect((remote_ip, remote_port))
 
-    def initialize_gui(self): # GUI initializer
-        self.root.title("Socket Chat") 
+    def initialize_gui(self):  # GUI initializer
+        self.root.title("Socket Chat")
         self.root.resizable(0, 0)
         self.display_chat_box()
         self.display_name_section()
         self.display_chat_entry_box()
-    
+
     def listen_for_incoming_messages_in_a_thread(self):
-        thread = threading.Thread(target=self.receive_message_from_server, args=(self.client_socket,)) # Create a thread for the send and receive in same time 
+        thread = threading.Thread(target=self.receive_message_from_server, args=(
+            self.client_socket,))  # Create a thread for the send and receive in same time
         thread.start()
-    #function to recieve msg
+    # function to recieve msg
+
     def receive_message_from_server(self, so):
         while True:
             buffer = so.recv(256)
             if not buffer:
                 break
             message = buffer.decode('utf-8')
-         
+
             if "joined" in message:
                 user = message.split(":")[1]
                 message = user + " has joined"
@@ -58,17 +59,22 @@ class GUI:
 
     def display_name_section(self):
         frame = Frame()
-        Label(frame, text='Enter your name:', font=("Helvetica", 16)).pack(side='left', padx=10)
+        Label(frame, text='Enter your name:', font=(
+            "Helvetica", 16)).pack(side='left', padx=10)
         self.name_widget = Entry(frame, width=50, borderwidth=2)
         self.name_widget.pack(side='left', anchor='e')
-        self.join_button = Button(frame, text="Join", width=10, command=self.on_join).pack(side='left')
+        self.join_button = Button(
+            frame, text="Join", width=10, command=self.on_join).pack(side='left')
         frame.pack(side='top', anchor='nw')
 
     def display_chat_box(self):
         frame = Frame()
-        Label(frame, text='Chat Box:', font=("Serif", 12)).pack(side='top', anchor='w')
-        self.chat_transcript_area = Text(frame, width=60, height=10, font=("Serif", 12))
-        scrollbar = Scrollbar(frame, command=self.chat_transcript_area.yview, orient=VERTICAL)
+        Label(frame, text='Chat Box:', font=(
+            "Serif", 12)).pack(side='top', anchor='w')
+        self.chat_transcript_area = Text(
+            frame, width=60, height=10, font=("Serif", 12))
+        scrollbar = Scrollbar(
+            frame, command=self.chat_transcript_area.yview, orient=VERTICAL)
         self.chat_transcript_area.config(yscrollcommand=scrollbar.set)
         self.chat_transcript_area.bind('<KeyPress>', lambda e: 'break')
         self.chat_transcript_area.pack(side='left', padx=10)
@@ -77,8 +83,10 @@ class GUI:
 
     def display_chat_entry_box(self):
         frame = Frame()
-        Label(frame, text='Enter message:', font=("Serif", 12)).pack(side='top', anchor='w')
-        self.enter_text_widget = Text(frame, width=60, height=3, font=("Serif", 12))
+        Label(frame, text='Enter message:', font=(
+            "Serif", 12)).pack(side='top', anchor='w')
+        self.enter_text_widget = Text(
+            frame, width=60, height=3, font=("Serif", 12))
         self.enter_text_widget.pack(side='left', pady=15)
         self.enter_text_widget.bind('<Return>', self.on_enter_key_pressed)
         frame.pack(side='top')
@@ -89,11 +97,13 @@ class GUI:
                 "Enter your name", "Enter your name to send a message")
             return
         self.name_widget.config(state='disabled')
-        self.client_socket.send(("joined:" + self.name_widget.get()).encode('utf-8'))
+        self.client_socket.send(
+            ("joined:" + self.name_widget.get()).encode('utf-8'))
 
     def on_enter_key_pressed(self, event):
         if len(self.name_widget.get()) == 0:
-            messagebox.showerror("Enter your name", "Enter your name to send a message")
+            messagebox.showerror(
+                "Enter your name", "Enter your name to send a message")
             return
         self.send_chat()
         self.clear_text()
@@ -118,74 +128,8 @@ class GUI:
             exit(0)
 
 
-width, height = 500, 500
-win = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Client")
-
-clientNumber = 0
-
-
-class Player:
-    def __init__(self, x, y, width, height, color):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.color = color
-        self.rect = (x, y, width, height)
-        self.vel = 3
-
-    def draw(self, win):
-        pygame.draw.rect(win, self.color, self.rect)
-
-    def move(self):
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_LEFT]:
-            self.x -= self.vel
-        if keys[pygame.K_RIGHT]:
-            self.x += self.vel
-        if keys[pygame.K_UP]:
-            self.y -= self.vel
-        if keys[pygame.K_DOWN]:
-            self.y += self.vel
-
-        self.rect = (self.x, self.y, self.width, self.height)
-
-    def showCords(self):
-        print(self.x, self.y)
-
-
-def redrawWindow(win, player):
-
-    win.fill((255, 235, 220))
-    player.draw(win)
-    pygame.display.update()
-
-
-def main():
-    run = True
-    n = Network()
-    startPos = n.getPos()
-    p = Player(50, 50, 100, 100, (0, 255, 0))
-    clock = pygame.time.Clock()
-
-    while run:
-        clock.tick(60)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
-        p.move()
-        # p.showCords()
-        redrawWindow(win, p)
-
-
-main()
-
-#the main function 
 if __name__ == '__main__':
-    root = Tk()
+    root = Tk()  # Chat application window
     gui = GUI(root)
     root.protocol("WM_DELETE_WINDOW", gui.on_close_window)
     root.mainloop()

@@ -3,7 +3,6 @@ import tkinter.messagebox
 from time import sleep
 from random import choice
 from PIL import ImageTk, Image
-
 from settings import *
 from board import *
 
@@ -111,7 +110,7 @@ class Coin:
         else:
             self.disable = True
 
-    def is_at_home(self):
+    def is_at_home(self): # checks if token has reached home or not
         return self.curr_x == self.home_x and self.curr_y == self.home_y
 
     def check_home(self):
@@ -189,20 +188,20 @@ class Coin:
         if len(Dice.roll) == 0:
             Dice.set(self.flag)
 
-    def set_playername(self, player):
+    def set_playername(self, player): # sets the player name
         self.player = player
 
 
-class Dice:
+class Dice: # for Dice
 
     chance = 0
     roll = []
     append_state = False
 
     @classmethod
-    def rolling(cls):
+    def rolling(cls): # for dice rolling
         temp = choice(range(1, 9))
-        if temp > 6:
+        if temp > 6: # to get a higher chance of getting Six
             temp = 6
 
         if len(cls.roll) == 0 or cls.roll[-1] == 6 or cls.append_state:
@@ -216,7 +215,7 @@ class Dice:
             4: 'de4.png',
             5: 'de5.png',
             6: 'de6.png',
-        }.get(cls.roll[-1], None)
+        }.get(cls.roll[-1], None) #get rolled dice image
 
         img = ImageTk.PhotoImage(Image.open('./assets/{}'.format(dice)))
         image_label = tk.Label(ludo.get_frame(), width=100, height=100, image=img, bg=Color.CYAN)
@@ -229,7 +228,7 @@ class Dice:
 
     @classmethod
     def start(cls):
-        Dice.rolling()
+        Dice.rolling() # gets the dice rolling
         if cls.roll.count(6) >= 3:
             if [cls.roll[-1], cls.roll[-2], cls.roll[-3]] == [6, 6, 6]:
                 for i in range(3):
@@ -305,7 +304,7 @@ class Dice:
 
 
 def align(x, y, color, path_list, flag):
-    container = []
+    container = [] # contains token for each player/color
     for i in range(2):
         test = Coin(ludo.get_canvas(), x, y + i*2*Board.SQUARE_SIZE, color=color, path_list=path_list, flag=flag)
         container.append(test)
@@ -313,7 +312,7 @@ def align(x, y, color, path_list, flag):
         test = Coin(ludo.get_canvas(), x + 2*Board.SQUARE_SIZE, y + i*2*Board.SQUARE_SIZE, color=color, path_list=path_list, flag=flag)
         container.append(test)
 
-    return container
+    return container # container of 4 tokens is returned
 
 def startgame():
     for i in range(4):
@@ -374,27 +373,34 @@ def on_closingroot():
         root.destroy() 
 
 
+# Starts from here
 players = []
-root = tk.Tk()
+root = tk.Tk() # root window created
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
 root.geometry('{}x{}'.format(width, height))
 root.title('Ludo')
 
-ludo = LudoBoard(root)
-ludo.create()
+ludo = LudoBoard(root) # ludo board object created from board.py
+ludo.create() # Ludo Board created
 
 turn = ['Green', 'Red', 'Blue', 'Yellow']
 position = []
 colors = []
+# Quadrants initializing
 colors.append(align(2.1*Board.SQUARE_SIZE, 2.1*Board.SQUARE_SIZE, color='green', path_list=path.green_path, flag=0))
 colors.append(align(2.1*Board.SQUARE_SIZE, 11.1*Board.SQUARE_SIZE, color='red', path_list=path.red_path, flag=1))
 colors.append(align(11.1*Board.SQUARE_SIZE, 11.1*Board.SQUARE_SIZE, color='blue', path_list=path.blue_path, flag=2))
 colors.append(align(11.1*Board.SQUARE_SIZE, 2.1*Board.SQUARE_SIZE, color='yellow', path_list=path.yellow_path, flag=3))
 
+
 for i in range(4):
+    print(colors[i][0])
     for j in range(4):
+        # print(colors[i][j])
         colors[i][j].change_state(0)
+
+print(getsizeof(colors))
 
 button = tk.Button(ludo.get_frame(), text='ROLL', command=Dice.start, width=20, height=2)
 button.place(x=210, y=470)
