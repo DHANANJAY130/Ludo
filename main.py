@@ -395,12 +395,11 @@ colors.append(align(11.1*Board.SQUARE_SIZE, 2.1*Board.SQUARE_SIZE, color='yellow
 
 
 for i in range(4):
-    print(colors[i][0])
+    # print(colors[i][0])
     for j in range(4):
         # print(colors[i][j])
         colors[i][j].change_state(0)
 
-print(getsizeof(colors))
 
 button = tk.Button(ludo.get_frame(), text='ROLL', command=Dice.start, width=20, height=2)
 button.place(x=210, y=470)
