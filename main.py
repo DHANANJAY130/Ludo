@@ -204,7 +204,7 @@ class Dice: # for Dice
         if temp > 6: # to get a higher chance of getting Six
             temp = 6
 
-        if len(cls.roll) == 0 or cls.roll[-1] == 6 or cls.append_state:
+        if len(cls.roll) == 0 or cls.roll[-1] == 6 or cls.append_state: #earlier 6 / no chance
             cls.roll.append(temp)
             cls.append_state = False
 
@@ -247,7 +247,7 @@ class Dice: # for Dice
         cls.roll = []
 
     @classmethod
-    def set(cls, flag):
+    def set(cls, flag): # default state img show dice
         flag += 1
         cls.chance = flag
         if flag == 4:
@@ -303,7 +303,7 @@ class Dice: # for Dice
                 Dice.update_panel()
 
 
-def align(x, y, color, path_list, flag):
+def align(x, y, color, path_list, flag): # initialize quadrant of each colour
     container = [] # contains token for each player/color
     for i in range(2):
         test = Coin(ludo.get_canvas(), x, y + i*2*Board.SQUARE_SIZE, color=color, path_list=path_list, flag=flag)
